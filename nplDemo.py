@@ -1,14 +1,23 @@
 #!/usr/bin/python
 import textract
 import sys
+import urllib2
 from pycorenlp import StanfordCoreNLP
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
-def pdfToText(pathToPdf, targetText = ""):
+def download_pdf(pdfUrl, targetText = ""):
+    response = urllib2.urlopen(pdfUrl)
+    file = open("../document.pdf", "w")
+    file.write(response.read())
+    file.close
+    pdfToText(targetText)
+    print("Completed")
+
+def pdfToText(targetText):
     nlp = StanfordCoreNLP("http://localhost:9000")
-    text = textract.process(pathToPdf)
+    text = textract.process("../document.pdf")
 
     print(targetText)
 
@@ -28,6 +37,7 @@ def pdfToText(pathToPdf, targetText = ""):
         "annotators": "sentiment",
         "outputFormat": "json",
     })
+
     for s in nlpOutput["sentences"]:
         print "%d: '%s': %s %s" % (
             s["index"],
@@ -35,11 +45,9 @@ def pdfToText(pathToPdf, targetText = ""):
             s["sentimentValue"], s["sentiment"])
 
 
-
 if len(sys.argv) < 2:
     print("Add atleast Pdf file and possible search argument(s)")
 else:
     print(sys.argv[1])
     targetText = " ".join(sys.argv[2::])
-    print(targetText)
-    pdfToText(sys.argv[1],targetText)
+    download_pdf(sys.argv[1],targetText)
