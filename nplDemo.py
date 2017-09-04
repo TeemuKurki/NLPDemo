@@ -6,11 +6,13 @@ from pycorenlp import StanfordCoreNLP
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
-def pdfToText(pathToPdf):
+def pdfToText(pathToPdf, targetText = ""):
     nlp = StanfordCoreNLP("http://localhost:9000")
     text = textract.process(pathToPdf)
 
-    start = text.find("In the second quarter of the year")
+    print(targetText)
+
+    start = text.find(targetText)
     end = text.find("\n\n",start)
 
     with open("wholeDocument.txt", "w") as file:
@@ -18,9 +20,11 @@ def pdfToText(pathToPdf):
     with open("tfMietteet.txt", "w") as file:
         file.write(text[start:end])
 
-    foundText = text[start:end]
-
-    nlpOutput = nlp.annotate(text,properties={
+    if targetText != "":
+        foundText = text[start:end]
+    else:
+        foundText = text
+    nlpOutput = nlp.annotate(foundText,properties={
         "annotators": "sentiment",
         "outputFormat": "json",
     })
@@ -33,8 +37,9 @@ def pdfToText(pathToPdf):
 
 
 if len(sys.argv) < 2:
-    print("Add path to pdf file")
+    print("Add atleast Pdf file and possible search argument(s)")
 else:
-    print(len(sys.argv))
     print(sys.argv[1])
-    pdfToText(sys.argv[1])
+    targetText = " ".join(sys.argv[2::])
+    print(targetText)
+    pdfToText(sys.argv[1],targetText)
