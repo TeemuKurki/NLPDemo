@@ -21,10 +21,9 @@ def download_pdf(pdfUrl, targetText = ""):
 def pdfToText(targetText):
     nlp = StanfordCoreNLP("http://localhost:9000")
     text = textract.process("document.pdf")
-    print(targetText)
 
-    with open("txtFromPdf.txt","w") as file:
-        file.write(text)
+    #with open("txtFromPdf.txt","w") as file:
+    #    file.write(text)
 
 
     if targetText != "":
@@ -40,8 +39,8 @@ def pdfToText(targetText):
         "outputFormat": "json",
     })
 
-    with open("nlpOutput.json", "w") as file:
-        json.dump(nlpOutput, file)
+    #with open("nlpOutput.json", "w") as file:
+    #    json.dump(nlpOutput, file)
 
     sentimentCounter = 0.0
     for s in nlpOutput["sentences"]:
